@@ -1,10 +1,12 @@
 const std = @import("std");
 const utils = @import("utils");
 const Point = utils.Point;
+const TimeWindow = @import("time_window.zig").TimeWindow;
 
 pub const CargoError = error{
     InvalidCoordinates,
     InvalidDistance,
+    TimeWindowViolation,
 };
 
 pub const Cargo = struct {
@@ -14,6 +16,8 @@ pub const Cargo = struct {
     allocator: std.mem.Allocator,
     weight_kg: f64,
     volume_m3: f64,
+    pickup_window: TimeWindow,
+    delivery_window: TimeWindow,
 
     pub fn init(allocator: std.mem.Allocator, options: struct {
         name: []const u8,
@@ -21,6 +25,8 @@ pub const Cargo = struct {
         dropoff: *Point,
         weight_kg: f64 = 0,
         volume_m3: f64 = 0,
+        pickup_window: TimeWindow,
+        delivery_window: TimeWindow,
     }) !*Cargo {
         const cargo = try allocator.create(Cargo);
         cargo.* = .{
@@ -30,6 +36,8 @@ pub const Cargo = struct {
             .allocator = allocator,
             .weight_kg = options.weight_kg,
             .volume_m3 = options.volume_m3,
+            .pickup_window = options.pickup_window,
+            .delivery_window = options.delivery_window,
         };
         return cargo;
     }
